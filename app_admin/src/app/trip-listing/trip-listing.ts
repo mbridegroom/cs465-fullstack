@@ -6,6 +6,8 @@ import { TripCard } from '../trip-card/trip-card';
 import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { AuthService } from '../services/authentication';
+
 @Component({
   selector: 'app-trip-listing',
   standalone: true,
@@ -14,18 +16,26 @@ import { Router } from '@angular/router';
   styleUrl: './trip-listing.css',
   providers: [TripData]
 })
-
 export class TripListing implements OnInit {
 
-  trips! : Trip[];
+  trips!: Trip[];
   message: string = '';
 
-  constructor(private tripData: TripData, private cdr: ChangeDetectorRef, private router: Router) {
+  constructor(
+    private tripData: TripData,
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authenticationService: AuthService
+  ) {
     console.log('trip-listing');
   }
-  
-  public addTrip(): void{
+
+  public addTrip(): void {
     this.router.navigate(['add-trip']);
+  }
+
+  public isLoggedIn(): boolean {
+    return this.authenticationService.isLoggedIn();
   }
 
   private getStuff(): void {
@@ -40,17 +50,14 @@ export class TripListing implements OnInit {
           } else {
             this.message = 'There were no trips retrieved from the database';
           }
-
-          console.log(this.message);
         },
         error: (error: any) => {
           console.log('Error: ' + error);
         }
-      })
+      });
   }
 
-   ngOnInit(): void {
-    console.log('ngOnInit');
+  ngOnInit(): void {
     this.getStuff();
   }
 }
